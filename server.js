@@ -1,45 +1,45 @@
-const express = require("express");
-const app = express();
-const server = require("http").Server(app);
-const { v4: uuidv4 } = require("uuid");
+// const express = require("express");
+// const app = express();
+// const server = require("http").Server(app);
+// const { v4: uuidv4 } = require("uuid");
 // const io = require("socket.io")(server);
 
-const io = require("socket.io")(server, {
-  transports: ["websocket"],
-});
+// // const io = require("socket.io")(server, {
+// //   transports: ["websocket"],
+// // });
 
 
-// Peer
+// // Peer
 
-const { ExpressPeerServer } = require("peer");
-const peerServer = ExpressPeerServer(server, {
-  debug: true,
-});
+// const { ExpressPeerServer } = require("peer");
+// const peerServer = ExpressPeerServer(server, {
+//   debug: true,
+// });
 
-app.set("view engine", "ejs");
-app.use(express.static("public"));
-app.use("/peerjs", peerServer);
+// app.set("view engine", "ejs");
+// app.use(express.static("public"));
+// app.use("/peerjs", peerServer);
 
-app.get("/", (req, rsp) => {
-  rsp.redirect(`/${uuidv4()}`);
-});
+// app.get("/", (req, rsp) => {
+//   rsp.redirect(`/${uuidv4()}`);
+// });
 
-app.get("/:room", (req, res) => {
-  res.render("room", { roomId: req.params.room });
-});
+// app.get("/:room", (req, res) => {
+//   res.render("room", { roomId: req.params.room });
+// });
 
-io.on("connection", (socket) => {
-  socket.on("join-room", (roomId, userId) => {
-    socket.join(roomId);
-    socket.to(roomId).broadcast.emit("user-connected", userId);
+// io.on("connection", (socket) => {
+//   socket.on("join-room", (roomId, userId) => {
+//     socket.join(roomId);
+//     socket.to(roomId).broadcast.emit("user-connected", userId);
 
-    socket.on("message", (message) => {
-      io.to(roomId).emit("createMessage", message);
-    });
-  });
-});
+//     socket.on("message", (message) => {
+//       io.to(roomId).emit("createMessage", message);
+//     });
+//   });
+// });
 
-server.listen(process.env.PORT || 3030);
+// server.listen(process.env.PORT || 3030);
 
 
 
@@ -102,3 +102,49 @@ server.listen(process.env.PORT || 3030);
 // server.listen(PORT, () => {
 //   console.log(`Server running on port ${PORT}`);
 // });
+
+
+//this is test for render deployment
+
+const express = require("express");
+const app = express();
+const server = require("http").Server(app);
+const { v4: uuidv4 } = require("uuid");
+const io = require("socket.io")(server);
+
+const { ExpressPeerServer } = require("peer");
+const peerServer = ExpressPeerServer(server, {
+  debug: true,
+});
+
+app.set("view engine", "ejs");
+app.use(express.static("public"));
+app.use("/peerjs", peerServer);
+
+app.get("/", (req, res) => {
+  res.redirect(`/${uuidv4()}`);
+});
+
+app.get("/:room", (req, res) => {
+  res.render("room", { roomId: req.params.room });
+});
+
+io.on("connection", (socket) => {
+  socket.on("join-room", (roomId, userId) => {
+    socket.join(roomId);
+    socket.to(roomId).emit("user-connected", userId);
+
+    socket.on("message", (message) => {
+      io.to(roomId).emit("createMessage", message);
+    });
+
+    socket.on("disconnect", () => {
+      socket.to(roomId).emit("user-disconnected", userId);
+    });
+  });
+});
+
+const PORT = process.env.PORT || 3030;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
