@@ -2,7 +2,13 @@ const express = require("express");
 const app = express();
 const server = require("http").Server(app);
 const { v4: uuidv4 } = require("uuid");
-const io = require("socket.io")(server);
+// const io = require("socket.io")(server);
+
+const io = require("socket.io")(server, {
+  transports: ["websocket"],
+});
+
+
 // Peer
 
 const { ExpressPeerServer } = require("peer");

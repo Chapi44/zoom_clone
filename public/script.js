@@ -6,10 +6,18 @@ const videoGrid = document.getElementById("video-grid");
 const myVideo = document.createElement("video");
 myVideo.muted = true;
 
+// var peer = new Peer(undefined, {
+//   path: "/peerjs",
+//   host: "/",
+//   port: "3030",
+// });
+
+
 var peer = new Peer(undefined, {
+  host: "https://zoom-clone-j681.onrender.com",
+  port: 443,
+  secure: true,
   path: "/peerjs",
-  host: "/",
-  port: "3030",
 });
 
 let myVideoStream;
